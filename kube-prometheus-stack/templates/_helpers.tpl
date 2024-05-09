@@ -57,13 +57,9 @@ The longest name that gets created adds and extra 37 characters, so truncation s
 {{- end }}
 {{- end }}
 
-{{/* ThanosRuler custom resource instance name */}}
-{{- define "kube-prometheus-stack.thanosRuler.crname" -}}
-{{- if .Values.cleanPrometheusOperatorObjectNames }}
-{{- include "kube-prometheus-stack.fullname" . }}
-{{- else }}
-{{- print (include "kube-prometheus-stack.fullname" .) "-thanos-ruler" -}}
-{{- end }}
+{{/* Fullname suffixed with thanos-ruler */}}
+{{- define "kube-prometheus-stack.thanosRuler.fullname" -}}
+{{- printf "%s-thanos-ruler" (include "kube-prometheus-stack.fullname" .) -}}
 {{- end }}
 
 {{/* Shortened name suffixed with thanos-ruler */}}

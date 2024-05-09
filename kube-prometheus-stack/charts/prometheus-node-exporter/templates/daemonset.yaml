@@ -176,8 +176,14 @@ spec:
               mountPath: {{ .mountPath }}
             {{- end }}
         {{- range .Values.sidecars }}
-          {{- $overwrites := dict "volumeMounts" (concat (include "prometheus-node-exporter.sidecarVolumeMounts" $ | fromYamlArray) (.volumeMounts | default list) | default list) }}
-          {{- $defaults := dict "image" (include "prometheus-node-exporter.image" $) "securityContext" $.Values.containerSecurityContext "imagePullPolicy" $.Values.image.pullPolicy }}
+          {{- $overwrites := dict 
+            "volumeMounts" (concat (include "prometheus-node-exporter.sidecarVolumeMounts" $ | fromYamlArray) (.volumeMounts | default list) | default list)
+          }}
+          {{- $defaults := dict 
+            "image" (include "prometheus-node-exporter.image" $) 
+            "securityContext" $.Values.containerSecurityContext 
+            "imagePullPolicy" $.Values.image.pullPolicy 
+          }}
         - {{- toYaml (merge $overwrites . $defaults) | nindent 10 }}
         {{- end }}
         {{-  if .Values.kubeRBACProxy.enabled  }}
@@ -188,7 +194,7 @@ spec:
             {{-  end  }}
             - --secure-listen-address=:{{ .Values.service.port}}
             - --upstream=http://127.0.0.1:{{ $servicePort }}/
-            - --proxy-endpoints-port={{ .Values.kubeRBACProxy.proxyEndpointsPort }}
+            - --proxy-endpoints-port=8888
             - --config-file=/etc/kube-rbac-proxy-config/config-file.yaml
           volumeMounts:
             - name: kube-rbac-proxy-config
@@ -205,15 +211,12 @@ spec:
               {{- if .Values.kubeRBACProxy.enableHostPort }}
               hostPort: {{ .Values.service.port }}
               {{- end }}
-            - containerPort: {{ .Values.kubeRBACProxy.proxyEndpointsPort }}
-              {{- if .Values.kubeRBACProxy.enableProxyEndpointsHostPort }}
-              hostPort: {{ .Values.kubeRBACProxy.proxyEndpointsPort }}
-              {{- end }}
+            - containerPort: 8888
               name: "http-healthz"
           readinessProbe:
             httpGet:
               scheme: HTTPS
-              port: {{ .Values.kubeRBACProxy.proxyEndpointsPort }}
+              port: 8888
               path: healthz
             initialDelaySeconds: 5
             timeoutSeconds: 5

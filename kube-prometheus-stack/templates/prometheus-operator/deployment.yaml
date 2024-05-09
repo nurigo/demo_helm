@@ -22,10 +22,6 @@ spec:
     matchLabels:
       app: {{ template "kube-prometheus-stack.name" . }}-operator
       release: {{ $.Release.Name | quote }}
-  {{- with .Values.prometheusOperator.strategy }}
-  strategy:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
   template:
     metadata:
       labels:
@@ -59,9 +55,6 @@ spec:
           args:
             {{- if .Values.prometheusOperator.kubeletService.enabled }}
             - --kubelet-service={{ .Values.prometheusOperator.kubeletService.namespace }}/{{ default $defaultKubeletSvcName .Values.prometheusOperator.kubeletService.name  }}
-            {{- if .Values.prometheusOperator.kubeletService.selector }}
-            - --kubelet-selector={{ .Values.prometheusOperator.kubeletService.selector }}
-            {{- end }}
             {{- end }}
             {{- if .Values.prometheusOperator.logFormat }}
             - --log-format={{ .Values.prometheusOperator.logFormat }}
@@ -158,25 +151,17 @@ spec:
 {{ toYaml .Values.prometheusOperator.resources | indent 12 }}
           securityContext:
 {{ toYaml .Values.prometheusOperator.containerSecurityContext | indent 12 }}
+{{- if .Values.prometheusOperator.tls.enabled }}
           volumeMounts:
-          {{- if .Values.prometheusOperator.tls.enabled }}
             - name: tls-secret
               mountPath: /cert
               readOnly: true
-          {{- end }}
-          {{- with .Values.prometheusOperator.extraVolumeMounts }}
-          {{- toYaml . | nindent 12 }}
-          {{- end }}
       volumes:
-        {{- if .Values.prometheusOperator.tls.enabled }}
         - name: tls-secret
           secret:
             defaultMode: 420
             secretName: {{ template "kube-prometheus-stack.fullname" . }}-admission
-        {{- end }}
-        {{- with .Values.prometheusOperator.extraVolumes }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+{{- end }}
     {{- with .Values.prometheusOperator.dnsConfig }}
       dnsConfig:
 {{ toYaml . | indent 8 }}
@@ -186,7 +171,6 @@ spec:
 {{ toYaml .Values.prometheusOperator.securityContext | indent 8 }}
 {{- end }}
       serviceAccountName: {{ template "kube-prometheus-stack.operator.serviceAccountName" . }}
-      automountServiceAccountToken: {{ .Values.prometheusOperator.automountServiceAccountToken }}
 {{- if .Values.prometheusOperator.hostNetwork }}
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet

@@ -96,8 +96,8 @@ nodeExporter:
 prometheusOperator:
   enabled: true
 
-prometheus-node-exporter:
-  priorityClassName: system-node-critical
+# prometheus-node-exporter:
+#   priorityClassName: system-node-critical
 
 prometheus:
   prometheusSpec:

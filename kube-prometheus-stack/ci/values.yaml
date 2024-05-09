@@ -38,6 +38,7 @@ grafana:
     - /*
   persistence:
     type: pvc
+    storageClassName: gp2
     enabled: true
     accessModes:
     - ReadWriteOnce

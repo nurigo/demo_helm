@@ -1,9 +1,8 @@
 replicaCount: 1
 image:
-  repository: nginx
-  pullPolicy: IfNotPresent
+  repository: 973531348166.dkr.ecr.ap-northeast-2.amazonaws.com/nurigo-testbed-container-registry
+  pullPolicy: Always
   tag: ''
-  tags: 05a8028aaf97f173e63913878165aa202c3c10c9
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''

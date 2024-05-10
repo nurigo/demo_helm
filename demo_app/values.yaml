@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: 973531348166.dkr.ecr.ap-northeast-2.amazonaws.com/nurigo-testbed-container-registry
   pullPolicy: Always
-  tag: ''
+  tag: 1583abc623a8546087fc19591722fe63b19d994e
 imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
